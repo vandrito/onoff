@@ -2,7 +2,8 @@ var fs = require('fs'),
     Epoll = require('epoll').Epoll,
     gpioRootPath = '/sys/class/gpio/',
     zero = new Buffer('0'),
-    one = new Buffer('1');
+    one = new Buffer('1'),
+    rpio = require('rpio');
 
 exports.version = '0.3.2';
 
