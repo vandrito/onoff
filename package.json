@@ -12,13 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fivdi/onoff.git"
+    "url": "https://github.com/vandrito/onoff.git"
   },
   "engines": {
     "node": ">=0.8.0"
   },
   "dependencies": {
-    "epoll": "~0.1.4"
+    "epoll": "~0.1.4",
+    "rpio": "0.0.6"
   },
   "keywords": [
     "gpio",
@@ -37,4 +38,3 @@
   "license": "MIT",
   "gypfile": true
 }
-

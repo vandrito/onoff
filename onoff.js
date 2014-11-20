@@ -46,6 +46,16 @@ function Gpio(gpio, direction, edge, options) {
     this.opts.debounceTimeout = options.debounceTimeout || 0;
     this.readBuffer = new Buffer(16);
     this.listeners = [];
+    this.edge = edge; // used for differenciation between irq and high speed W/R
+
+    if (!edge) {
+        if (direction == 'out') {
+            rpio.setOutput(this.gpio);
+        } else {
+            rpio.setInput(this.gpio);
+        }
+        return this;
+    }
 
     valuePath = this.gpioPath + 'value';
 
@@ -113,8 +123,12 @@ Gpio.prototype.read = function(callback) {
  * Returns - number // 0 or 1
  */
 Gpio.prototype.readSync = function() {
-    fs.readSync(this.valueFd, this.readBuffer, 0, 1, 0);
-    return this.readBuffer[0] === one[0] ? 1 : 0;
+    if (this.edge) {
+        fs.readSync(this.valueFd, this.readBuffer, 0, 1, 0);
+        return this.readBuffer[0] === one[0] ? 1 : 0;
+    } else {
+        return rpio.read(this.gpio);
+    }
 };
 
 /**
@@ -134,8 +148,12 @@ Gpio.prototype.write = function(value, callback) {
  * value: number // 0 or 1
  */
 Gpio.prototype.writeSync = function(value) {
-    var writeBuffer = value === 1 ? one : zero;
-    fs.writeSync(this.valueFd, writeBuffer, 0, writeBuffer.length, 0);
+    if (this.edge) {
+        var writeBuffer = value === 1 ? one : zero;
+        fs.writeSync(this.valueFd, writeBuffer, 0, writeBuffer.length, 0);
+    } else {
+        rpio.write(this.gpio, value ? rpio.HIGH : rpio.LOW);
+    }
 };
 
 /**
