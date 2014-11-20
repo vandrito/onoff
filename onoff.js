@@ -42,11 +42,6 @@ function Gpio(gpio, direction, edge, options) {
     options = options || {};
 
     this.gpio = gpio;
-    this.gpioPath = gpioRootPath + 'gpio' + this.gpio + '/';
-    this.opts = {};
-    this.opts.debounceTimeout = options.debounceTimeout || 0;
-    this.readBuffer = new Buffer(16);
-    this.listeners = [];
     this.edge = edge; // used for differenciation between irq and high speed W/R
 
     if (!edge) {
@@ -57,6 +52,12 @@ function Gpio(gpio, direction, edge, options) {
         }
         return this;
     }
+
+    this.gpioPath = gpioRootPath + 'gpio' + this.gpio + '/';
+    this.opts = {};
+    this.opts.debounceTimeout = options.debounceTimeout || 0;
+    this.readBuffer = new Buffer(16);
+    this.listeners = [];
 
     valuePath = this.gpioPath + 'value';
 
@@ -289,8 +290,10 @@ Gpio.prototype.options = function() {
  * should not be used after calling this method.
  */
 Gpio.prototype.unexport = function(callback) {
-    this.unwatchAll();
-    fs.closeSync(this.valueFd);
-    fs.writeFileSync(gpioRootPath + 'unexport', this.gpio);
+    if (this.edge) {
+        this.unwatchAll();
+        fs.closeSync(this.valueFd);
+        fs.writeFileSync(gpioRootPath + 'unexport', this.gpio);
+    }
 };
 
