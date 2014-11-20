@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "epoll": "~0.1.4",
-    "rpio": "0.0.6"
+    "rpio": "vandrito/node-rpio"
   },
   "keywords": [
     "gpio",
